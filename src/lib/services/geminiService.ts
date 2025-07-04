@@ -2,8 +2,15 @@ import { GoogleGenAI, GenerateContentResponse, Candidate } from "@google/genai";
 import { GEMINI_MODEL_TEXT } from '../constants';
 import { GroundingMetadata } from '../../types';
 
-// ✅ Para Next.js usamos process.env
-const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+// TypeScript declaration for Node.js process
+declare const process: {
+  env: {
+    [key: string]: string | undefined;
+  };
+};
+
+// ✅ Para Next.js usamos process.env - Support both VITE_ and NEXT_PUBLIC_ prefixes
+const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
 
 if (!API_KEY) {
   console.error("❌ NEXT_PUBLIC_GEMINI_API_KEY no está configurada. Por favor verifica tu archivo .env");

@@ -9,17 +9,46 @@ const HISTORY_KEY = 'notasai_history';
 const getUserTemplatesKey = (userId: string): string => `notasai_templates_${userId}`;
 const getUserHistoryKey = (userId: string): string => `notasai_history_${userId}`;
 
+// Safe localStorage wrapper for SSR compatibility
+const safeLocalStorage = {
+  getItem: (key: string): string | null => {
+    if (typeof window === 'undefined') return null;
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      console.error('Error accessing localStorage:', error);
+      return null;
+    }
+  },
+  setItem: (key: string, value: string): void => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      console.error('Error setting localStorage:', error);
+    }
+  },
+  removeItem: (key: string): void => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error('Error removing from localStorage:', error);
+    }
+  }
+};
+
 export const getThemePreference = (): Theme => {
-  const storedTheme = localStorage.getItem(THEME_KEY) as Theme | null;
+  const storedTheme = safeLocalStorage.getItem(THEME_KEY) as Theme | null;
   return storedTheme || Theme.Light; // Default to light theme
 };
 
 export const setThemePreference = (theme: Theme): void => {
-  localStorage.setItem(THEME_KEY, theme);
+  safeLocalStorage.setItem(THEME_KEY, theme);
 };
 
 export const getStoredTemplates = (): Templates => {
-  const storedTemplates = localStorage.getItem(TEMPLATES_KEY);
+  const storedTemplates = safeLocalStorage.getItem(TEMPLATES_KEY);
   if (storedTemplates) {
     try {
       return JSON.parse(storedTemplates);
@@ -34,14 +63,14 @@ export const getStoredTemplates = (): Templates => {
 
 export const saveTemplates = (templates: Templates): void => {
   try {
-    localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
+    safeLocalStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
   } catch (error) {
     console.error("Failed to save templates:", error);
   }
 };
 
 export const getStoredHistoricNotes = (): HistoricNote[] => {
-  const storedHistory = localStorage.getItem(HISTORY_KEY);
+  const storedHistory = safeLocalStorage.getItem(HISTORY_KEY);
   if (storedHistory) {
     try {
       return JSON.parse(storedHistory);
@@ -55,7 +84,7 @@ export const getStoredHistoricNotes = (): HistoricNote[] => {
 
 export const saveHistoricNotes = (notes: HistoricNote[]): void => {
   try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(notes));
+    safeLocalStorage.setItem(HISTORY_KEY, JSON.stringify(notes));
   } catch (error) {
     console.error("Failed to save historic notes:", error);
   }
@@ -74,7 +103,7 @@ export const addHistoricNoteEntry = (newNote: HistoricNote): HistoricNote[] => {
 
 // User-specific storage functions
 export const getUserStoredTemplates = (userId: string): Templates => {
-  const storedTemplates = localStorage.getItem(getUserTemplatesKey(userId));
+  const storedTemplates = safeLocalStorage.getItem(getUserTemplatesKey(userId));
   if (storedTemplates) {
     try {
       return JSON.parse(storedTemplates);
@@ -88,14 +117,14 @@ export const getUserStoredTemplates = (userId: string): Templates => {
 
 export const saveUserTemplates = (userId: string, templates: Templates): void => {
   try {
-    localStorage.setItem(getUserTemplatesKey(userId), JSON.stringify(templates));
+    safeLocalStorage.setItem(getUserTemplatesKey(userId), JSON.stringify(templates));
   } catch (error) {
     console.error("Failed to save user templates:", error);
   }
 };
 
 export const getUserStoredHistoricNotes = (userId: string): HistoricNote[] => {
-  const storedHistory = localStorage.getItem(getUserHistoryKey(userId));
+  const storedHistory = safeLocalStorage.getItem(getUserHistoryKey(userId));
   if (storedHistory) {
     try {
       return JSON.parse(storedHistory);
@@ -109,7 +138,7 @@ export const getUserStoredHistoricNotes = (userId: string): HistoricNote[] => {
 
 export const saveUserHistoricNotes = (userId: string, notes: HistoricNote[]): void => {
   try {
-    localStorage.setItem(getUserHistoryKey(userId), JSON.stringify(notes));
+    safeLocalStorage.setItem(getUserHistoryKey(userId), JSON.stringify(notes));
   } catch (error) {
     console.error("Failed to save user historic notes:", error);
   }
@@ -127,6 +156,6 @@ export const addUserHistoricNoteEntry = (userId: string, newNote: HistoricNote):
 
 // Utility function to clear user data (for logout)
 export const clearUserData = (userId: string): void => {
-  localStorage.removeItem(getUserTemplatesKey(userId));
-  localStorage.removeItem(getUserHistoryKey(userId));
+  safeLocalStorage.removeItem(getUserTemplatesKey(userId));
+  safeLocalStorage.removeItem(getUserHistoryKey(userId));
 };

@@ -11,13 +11,15 @@ export function useDarkMode(): [Theme, () => void] {
   }, []);
 
   useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === Theme.Dark) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
+    if (typeof window !== 'undefined') {
+      const root = window.document.documentElement;
+      if (theme === Theme.Dark) {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+      setThemePreference(theme);
     }
-    setThemePreference(theme);
   }, [theme]);
 
   return [theme, toggleTheme];

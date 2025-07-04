@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, Montserrat } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/Providers'
-import AuthProvider from '@/components/providers/SessionProvider'
+import { AuthProvider } from '@/contexts/AuthContext'
 import Header from '@/components/ui/Header'
 
 export const metadata: Metadata = {

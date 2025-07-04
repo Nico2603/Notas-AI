@@ -1,3 +1,5 @@
+'use client';
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { auth, supabase, type AuthUser } from '@/lib/supabase';
 import type { Session } from '@supabase/supabase-js';
@@ -82,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setError(null);
         
         // Limpiar URL después de autenticación exitosa
-        if (event === 'SIGNED_IN') {
+        if (event === 'SIGNED_IN' && typeof window !== 'undefined') {
           console.log('🧹 Limpiando URL después de autenticación exitosa');
           const cleanUrl = window.location.origin + window.location.pathname;
           window.history.replaceState({}, document.title, cleanUrl);

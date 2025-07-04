@@ -1,17 +1,25 @@
 ﻿import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
 
-if (!supabaseUrl || !supabaseAnonKey) {
+// Only throw error in browser context, not during build
+if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
+  console.error('Variables de entorno Supabase faltantes');
   throw new Error('Variables de entorno Supabase faltantes');
 }
 
-console.log('✅ Variables de entorno Supabase validadas correctamente');
-console.log('📍 URL:', supabaseUrl);
-console.log('🔑 Anon Key:', supabaseAnonKey.substring(0, 20) + '...');
+// Only log and create client if we have valid env vars
+if (supabaseUrl && supabaseAnonKey) {
+  console.log('✅ Variables de entorno Supabase validadas correctamente');
+  console.log('📍 URL:', supabaseUrl);
+  console.log('🔑 Anon Key:', supabaseAnonKey.substring(0, 20) + '...');
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create a placeholder client during build time or a real one with valid env vars
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createClient('https://placeholder.supabase.co', 'placeholder-key');
 
 export type AuthUser = {
   id: string;

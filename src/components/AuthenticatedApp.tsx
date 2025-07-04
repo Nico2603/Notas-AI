@@ -33,10 +33,11 @@ import UserProfile from './auth/UserProfile';
 import { SparklesIcon, LoadingSpinner, LightBulbIcon, MicrophoneIcon, CalculatorIcon } from './ui/Icons';
 
 
-// SpeechRecognition API compatibility: Use window types which are now augmented by types.ts
-const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-
 const AuthenticatedApp: React.FC = () => {
+  // SpeechRecognition API compatibility: Use window types which are now augmented by types.ts
+  const SpeechRecognitionAPI = typeof window !== 'undefined' 
+    ? (window.SpeechRecognition || window.webkitSpeechRecognition)
+    : null;
   const { user } = useAuth();
   const [theme, toggleTheme] = useDarkMode();
   const [activeView, setActiveView] = useState<ActiveView>('generate');
